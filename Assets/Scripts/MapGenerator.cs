@@ -4,22 +4,57 @@ using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
+    public enum DrawMode { HeightMap, Texture2D };
+    public DrawMode drawMode;
+
     public int mapWidth;
     public int mapHeight;
     public int seed;
+
     public float noiseScale;
     public bool autoUpdate;
     public int octaves;
     [Range(0, 1)]
     public float persistance;
     public float lacunarity;
+
     public Vector2 offset;
+
+    public TerrainType[] types;
+
+    public TerrainType MatchTerrainType(float height)
+    {
+        for (int i = 0; i < types.Length; i++)
+        {
+            if (types[i].height >= height)
+            {
+                return types[i];
+            }
+        }
+        return types[types.Length - 1];
+    }
 
     public void GenerateMap()
     {
         var noiseMap = Noise.GenerateNoise(mapWidth, mapHeight, seed, noiseScale, octaves, persistance, lacunarity, offset);
         var display = FindObjectOfType<MapDisplay>();
-        display.DrawNoiseMap(noiseMap);
+
+        if (drawMode == DrawMode.HeightMap)
+        {
+            display.DrawTexture(TextureGenerator.CreateTextureFromHeightMap(noiseMap));
+        }
+        else if (drawMode == DrawMode.Texture2D)
+        {
+            Color[] colorMap = new Color[mapWidth * mapHeight];
+            for (int y = 0; y < mapHeight; y++)
+            {
+                for (int x = 0; x < mapWidth; x++)
+                {
+                    colorMap[y * mapWidth + x] = MatchTerrainType(noiseMap[x, y]).color;
+                }
+            }
+            display.DrawTexture(TextureGenerator.CreateTextureFromPixels(colorMap, mapWidth, mapHeight));
+        }
     }
 
     void OnValidate()
@@ -45,4 +80,13 @@ public class MapGenerator : MonoBehaviour
             lacunarity = 1;
         }
     }
+}
+
+
+[System.Serializable]
+public struct TerrainType
+{
+    public string name;
+    public float height;
+    public Color color;
 }
