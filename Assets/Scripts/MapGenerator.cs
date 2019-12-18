@@ -7,6 +7,9 @@ public class MapGenerator : MonoBehaviour
     public enum DrawMode { HeightMap, Texture2D, Mesh };
     public DrawMode drawMode;
 
+    const int mapChunkSize = 241;
+    [Range(0, 6)]
+    public int levelOfDetail;
     public int mapWidth;
     public int mapHeight;
     public int seed;
@@ -66,7 +69,7 @@ public class MapGenerator : MonoBehaviour
                     colorMap[y * mapWidth + x] = MatchTerrainType(noiseMap[x, y]).color;
                 }
             }
-            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, heightMultiplier, meshHeightCurve), TextureGenerator.CreateTextureFromPixels(colorMap, mapWidth, mapHeight));
+            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, heightMultiplier, meshHeightCurve, levelOfDetail), TextureGenerator.CreateTextureFromPixels(colorMap, mapWidth, mapHeight));
         }
             
     }
