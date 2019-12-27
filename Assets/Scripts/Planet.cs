@@ -34,9 +34,10 @@ public class Planet : MonoBehaviour
     public void ConstructMesh()
     {
         Initialize();
-        for (int i = 0; i < directions.Length; i++) {
-                faces[i] = new TerrainFace(meshFilters[i].sharedMesh, resolution, directions[i]);
-                faces[i].ConstructMesh();
+        for (int i = 0; i < directions.Length; i++)
+        {
+            faces[i] = new TerrainFace(meshFilters[i].sharedMesh, resolution, directions[i]);
+            faces[i].ConstructMesh();
         }
     }
 }
